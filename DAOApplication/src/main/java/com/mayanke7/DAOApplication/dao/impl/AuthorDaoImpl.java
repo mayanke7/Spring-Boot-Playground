@@ -38,9 +38,27 @@ public class AuthorDaoImpl implements AuthorDao {
         return authors.stream().findFirst();
     }
 
+    @Override
+    public List<Author> find() {
+
+        List<Author> authors= jdbcTemplate.query("select id, name, email from authors",
+                new AuthorRowMapper());
+
+        return authors;
+    }
+
+    @Override
+    public void update(long id, Author author) {
+        jdbcTemplate.update("update authors set id = ?, name = ?, email = ? where id = ?",
+                author.getId(), author.getName(), author.getEmail(), id);
+    }
+
+    @Override
+    public void delete(long id) {
+        jdbcTemplate.update("delete from authors where id = ?", id);
+    }
+
     public static class AuthorRowMapper implements RowMapper<Author>{
-
-
         @Override
         public Author mapRow(ResultSet rs, int rowNum) throws SQLException {
             return Author.builder()
